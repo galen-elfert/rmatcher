@@ -1,5 +1,11 @@
 # rmatcher
-OpenCV for locating resistors in a pile
+OpenCV for locating resistors in a pile. 
+
+Requires opencv, numpy, and matplotlib python packages. 
+
+To recreate the conda environment:
+
+`conda env create -f environment.yml`
 
 ## labeller.py
 A tool for marking locations of resistors in an image, storing them in a csv. 
