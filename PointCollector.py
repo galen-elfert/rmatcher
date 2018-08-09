@@ -81,8 +81,11 @@ class PointCollector:
         elif mode == "rgb":
             img_bgr = cv.imread(img_file, cv.IMREAD_COLOR)
             self.img = img_bgr[...,::-1]
-        elif mode == "grayscale":
+        elif mode == "gray":
             self.img = cv.imread(img_file, cv.IMREAD_GRAYSCALE)
+        elif mode == "hsv":
+            img_bgr = cv.imread(img_file)
+            self.img = cv.cvtColor(img_bgr, cv.COLOR_BGR2HSV)
         else:
             raise ValueError("invalid mode: ", mode)
         self.mode = mode
