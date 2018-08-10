@@ -9,23 +9,17 @@ import pylab
 import numpy as np
 import cv2 as cv
 import sys
+import math
 
 # Globals
-num_angles = 8
-template_size = 80
-templates = []
-matches = []
-locations = []
-locations_real = []
-img_input = None
-
-fig, axes = plt.subplots(1,2)
-current_image = 0
-
 class location:
-    def __init__(self, value, location):
-        self.val = value
-        self.loc = location
+    def __init__(self, value, location, angle):
+        self.value = value
+        self.location = location
+        self.angle = angle
+
+    def __str__(self):
+        return "{0:<15} val: {1:<10}, angle: {2}".format(str(self.location), self.value, self.angle)
 
     def __eq__(self, other):
         return self.val == other.val
@@ -45,35 +39,10 @@ class location:
     def __ge__(self, other):
         return self.val >= other.val
 
-# Draw the match image for the current template next to the input image 
-# with the best match location plotted on both
-def drawMatch(index):
-    global fig, ax, img_input
-    axes[0].clear()
-    axes[0].imshow(img_input)
-    x = locations_real[index][0]
-    y = locations_real[index][1]
-    axes[0].plot(x, y, 'r+')
-    axes[1].clear()
-    axes[1].imshow(matches[index])
-    x = locations[index][0] 
-    y = locations[index][1]
-    axes[1].plot(x, y, 'r+')
-    fig.canvas.draw()
-
-# Callback for match viewing
-def onKey(event):
-    global fig, ax, current_image
-    if event.key == 'j':
-        if current_image < num_angles-1:
-            current_image += 1
-    if event.key == 'k':
-        if current_image > 0:
-            current_image -= 1
-    drawMatch(current_image)
-
 def main(argv):
-    global img_input, locations, locations_real, fig, axes
+    num_angles = 16
+    template_size = 80
+
     if len(argv) < 2:
         print("Usage: python matcher.py INPUT_IMAGE TEMPLATE_IMAGE")
         sys.exit()
@@ -91,6 +60,7 @@ def main(argv):
     if pad < 0:
         raise Exception("template size must be less than input template size")
 
+    templates = []
     for i in range(num_angles):
         angle = (i / num_angles) * 360
         mat_rot = cv.getRotationMatrix2D((tin_width/2, tin_width/2), angle, 1)
@@ -99,28 +69,63 @@ def main(argv):
 
     # Generate template match images
     count = 0
-    maxmaxval = 0
-    maxmaxloc = 0
-    maxmaxindex = 0
+    match_sum = None
+    match_array = None 
     for template in templates:
         match = cv.matchTemplate(img_input, template, cv.TM_CCOEFF)
-        matches.append(match)
-        min_val, max_val, min_loc, max_loc = cv.minMaxLoc(match)
-        locations.append(max_loc)
-        real_loc = (max_loc[0]+(template_size/1.3), max_loc[1]+(template_size/1.3))
-        locations_real.append(real_loc)
-        print("max_val: ", max_val)
-        print("max_loc: ", max_loc)
-        if max_val > maxmaxval:
-            maxmaxval = max_val
-            maxmaxloc = max_loc
-            maxmaxindex = count
+        if count == 0:
+            match_sum = np.copy(match)
+            match_array = np.copy(match)
+        else:
+            match_sum += match
+            match_array = np.dstack((match_array, match))
+        lmax = np.unravel_index(match.argmax(), match.shape) 
+        print("layer: ", count, "max: ", np.amax(match), "loc: ", lmax)
         count += 1
+    match_mean = match_sum / float(count)
+    match_min = np.amin(match_array)
+    match_max = np.amax(match_array)
+    match_norm = (match_array - match_min) / (match_max - match_min)
 
-    print("maxmaxindex: ", maxmaxindex)
-    current_image = maxmaxindex
-    drawMatch(current_image)
-    fig.canvas.mpl_connect('key_press_event', onKey)
+    # Find best locations
+    num_locations = 8
+    blank_radius = 32
+    match_copy = np.copy(match_norm)
+    shape = match_copy.shape
+    xmax = shape[0]
+    ymax = shape[1]
+    print("shape ", match_copy.shape)
+    locations = []
+    for i in range(num_locations):
+        value = np.amax(match_copy)
+        loc = np.unravel_index(match_copy.argmax(), match_copy.shape)
+        print("loc: ", str(loc))
+        angle = (loc[2] / num_angles) * math.pi * 2
+        x = loc[0]
+        y = loc[1]
+        match_copy[max(0, x-blank_radius):min(xmax, x+blank_radius), max(0, y-blank_radius):min(ymax, y+blank_radius), :] = 0
+        locations.append(location(value, (x,y), angle))
+        print(str(locations[-1]))
+        
+    # Display matches
+    plt.imshow(cv.cvtColor(img_input, cv.COLOR_BGR2GRAY), 'gray')
+    for l in locations:
+        x = l.location[1] + template_size/1.3
+        y = l.location[0] + template_size/1.3
+        x1 = x + math.cos(l.angle) * 32
+        x2 = x - math.cos(l.angle) * 32
+        y1 = y - math.sin(l.angle) * 32
+        y2 = y + math.sin(l.angle) * 32
+        plt.plot([x1, x2], [y1, y2], color='red', linewidth=2)
+
+    # plt.plot(x, y, 'ws', markersize=20, markerfacecolor='none')
+
+    # Display match output arrays
+    # fig, axes = plt.subplots(2,4)
+    # count = 0
+    # for i in range(2):
+        # for j in range(4):
+            # axes[i][j].imshow(match_copy[:,:,(j+i*4) * int(num_angles/8)])
     plt.show()
 
 if __name__ == '__main__':
