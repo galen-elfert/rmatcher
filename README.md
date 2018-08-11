@@ -1,9 +1,11 @@
 # rmatcher
 OpenCV for locating resistors in a pile. 
 
-Requires opencv, numpy, and matplotlib python packages. 
+Both the Python scripts and the C++ rmatcher program require the OpenCV library. Detailed instructions for installing opencv can be found here: https://www.learnopencv.com/install-opencv3-on-ubuntu/
 
-The simplest way to install all dependencies is to use the Conda package manager (https://conda.io/docs/user-guide/install/download.html). 
+The Python version also requires the numpy and matplotlib packages. 
+
+The simplest way to install the python dependencies is to use the Conda package manager (https://conda.io/docs/user-guide/install/download.html). 
 
 To recreate the conda environment:
 
@@ -43,5 +45,4 @@ There is a C++ port of rmatcher. It has fewer options and runs only the optimize
 The program will display the input image in a window with the best match highlighted, and print the location and angle to the stdout. 
 
 ## TODO
-- Port matching program to C/++. 
 - Read resistor values. 
