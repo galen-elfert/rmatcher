@@ -20,7 +20,7 @@ class location:
         self.angle = angle
 
     def __str__(self):
-        return "{0:<15} val: {1:<10}, angle: {2}".format(str(self.location), self.value, self.angle)
+        return "{0:<11} value: {1:<6.4} angle: {2:.2}".format(str(self.location), self.value, self.angle)
 
     def __eq__(self, other):
         return self.value == other.value
@@ -50,7 +50,6 @@ def match(img_input, img_template, num_angles=16, template_size=None):
         mask[int(tin_width/2)-15:int(tin_width/2)+15,0:tin_width,:] = 255
     else:
         mask[int(tin_width/2)-15:int(tin_width/2)+15, 0:tin_width] = 255
-    print("t shape: ", tin_shape, "m shape: ", mask.shape)
     if template_size == None:
         template_size = int(tin_width / math.sqrt(2))
     pad = int(tin_width/2 - template_size/2)
@@ -77,13 +76,7 @@ def match(img_input, img_template, num_angles=16, template_size=None):
         else:
             match_array = np.dstack((match_array, match))
         lmax = np.unravel_index(match.argmax(), match.shape) 
-        # print("layer: ", count, "max: ", np.amax(match), "loc: ", lmax)
         count += 1
-
-    # fix, axes = plt.subplots(1,2)
-    # axes[0].imshow(match_array[:,:,0], cmap=plt.get_cmap('inferno'))
-    # axes[1].imshow(match_array[:,:,5], cmap=plt.get_cmap('inferno'))
-    # plt.show()
 
     end = time.time()
     print("Elapsed: ", end - start)
