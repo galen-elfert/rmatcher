@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
         cout << "Usage: rmatcher INPUT_IMAGE TEMPLATE_IMAGE" << endl;
         return 1;
     }
-    Mat img = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
-    Mat tmp = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
-    Mat img_display = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    Mat tmp = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    Mat img = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
+    Mat img_display = imread(argv[2], CV_LOAD_IMAGE_COLOR);
     Mat img_small;
     // Resize the display image
     resize(img_display, img_small, Size(), DISPLAY_SCALE, DISPLAY_SCALE);
