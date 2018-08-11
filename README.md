@@ -35,6 +35,13 @@ usage: matcher.py [-h] [--tsize TSIZE] [--num_angles NUM_ANGLES]
 Example:
 `python matcher.py output/template-color.png input/input04.png`
 
+## rmatcher
+There is a C++ port of rmatcher. It has fewer options and runs only the optimized version of the algorithm. To build, simply run make. Usage is the same as rmatcher.py, but without the extra flags:
+
+`rmatcher TEMPLATE_IMAGE INPUT_IMAGE`
+
+The program will display the input image in a window with the best match highlighted, and print the location and angle to the stdout. 
+
 ## TODO
 - Port matching program to C/++. 
 - Read resistor values. 
