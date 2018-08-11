@@ -1,3 +1,5 @@
+#!python
+
 """
 Apply rotational template matching
 """
@@ -174,7 +176,7 @@ def main(argv):
         y2 = y - math.sin(l.angle) * 32
         plt.plot([x1, x2], [y1, y2], color=(0.2,1,0.5), linewidth=4)
         plt.annotate(str(rank), (x,y), xytext=(0,30), textcoords='offset points', 
-                bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=0.7),
+                bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1.0),
                 arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0'))
         rank += 1
 
