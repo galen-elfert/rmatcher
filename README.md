@@ -9,6 +9,10 @@ To recreate the conda environment:
 
 `conda env create -f environment.yml`
 
+To start the environment:
+
+`source activate opencv`
+
 ## labeller.py
 A tool for marking locations of resistors in an image, storing them in a csv. 
 
