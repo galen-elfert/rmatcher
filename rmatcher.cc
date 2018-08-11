@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     Mat img_small;
     // Resize the display image
     resize(img_display, img_small, Size(), DISPLAY_SCALE, DISPLAY_SCALE);
-    location matchLoc = rmatch(img, tmp);
+    location matchLoc = rmatch(img, tmp, 64, 0.5);
     // Get line marker coordinates
     unsigned x1 = (matchLoc.loc.x - cos(matchLoc.angle) * 32) * DISPLAY_SCALE;
     unsigned x2 = (matchLoc.loc.x + cos(matchLoc.angle) * 32) * DISPLAY_SCALE;

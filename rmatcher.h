@@ -17,15 +17,14 @@ typedef struct location
 
 location rmatch(Mat img, Mat tmp);
 
-location rmatch(Mat img, Mat tmp)
+location rmatch(Mat img, Mat tmp, unsigned tmpw, double scale)
 {
     // Scale images
     Mat img_scaled, tmp_scaled;
-    resize(img, img_scaled, Size(), PRESCALE, PRESCALE);
-    resize(tmp, tmp_scaled, Size(), PRESCALE, PRESCALE);
+    resize(img, img_scaled, Size(), scale, scale);
+    resize(tmp, tmp_scaled, Size(), scale, scale);
 
     // Generate rotated templates
-    unsigned tmpw = TEMPLATE_SIZE;
     unsigned pad = floor((tmp_scaled.cols - tmpw) / 2);
     Size rsize;
     rsize.width = tmpw;
@@ -61,8 +60,8 @@ location rmatch(Mat img, Mat tmp)
         if(maxVal > maxMaxVal)
         {
             maxMaxVal = maxVal;
-            matchLoc.loc.x = (maxLoc.x + (tmpw / 2)) / PRESCALE;
-            matchLoc.loc.y = (maxLoc.y + (tmpw / 2)) / PRESCALE;
+            matchLoc.loc.x = (maxLoc.x + (tmpw / 2)) / scale;
+            matchLoc.loc.y = (maxLoc.y + (tmpw / 2)) / scale;
             matchLoc.angle = angle;
         }
     }
